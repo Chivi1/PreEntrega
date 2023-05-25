@@ -2,11 +2,11 @@ import productModel from "../Models/ProductModel.js";
 
 export default class ProductManager {
 getProducts = ()=>{
-    return productModel.find().lean;
+    return productModel.find();
     }
 
 getProductBy = (params)=>{
-    return productModel.findOne(params).lean;
+    return productModel.findOne(params);
 }
 
 createProduct = (product)=>{

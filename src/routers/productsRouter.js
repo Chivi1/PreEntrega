@@ -5,7 +5,7 @@ const router = Router();
 const productService = new ProductManager();
 
 router.get('/',async(req,res)=>{
-    const products = await productService.getProducts();
+    const products = await productService.getProducts().lean();
     res.render('products',{products});
 })
 
@@ -27,7 +27,7 @@ router.post('/', async(req,res)=>{
 
 router.get('/pid',async(req,res)=>{
     const {cid} = req.params;
-    const product = await productService.getProductBy({_id: cid});
+    const product = await productService.getProductBy({_id: cid}).lean();
     if (!product) 
         return res.status(404).send({status:"error",error:"product not found"});
     res.send({status: "success", payload: product});

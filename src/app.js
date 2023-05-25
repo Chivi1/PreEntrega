@@ -1,9 +1,9 @@
 import express from 'express';
 import handlebars from 'express-handlebars';
 
-import viewsRouter from './src/routers/viewsRouter.js'
-import productsRouter from './src/routers/productsRouter.js'
-import cartRouter from './src/routers/cartRouter.js'
+import viewsRouter from './routers/viewsRouter.js'
+import productsRouter from './routers/productsRouter.js'
+import cartRouter from './routers/cartRouter.js'
 
 import __dirname from './utils.js';
 import mongoose from 'mongoose';
