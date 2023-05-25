@@ -1,0 +1,9 @@
+<h1>Listado de productos</h1>
+    <p id="product-list">
+<!-- Aquí se mostrarán los productos -->
+            {{#each products}}
+                <li>{{this.title}} - {{this.price}}</li>
+            {{/each}}
+</p>
+
+
