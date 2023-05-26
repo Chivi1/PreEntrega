@@ -1,6 +1,37 @@
 <h1>Todos los productos</h1>
+
+<form action="/api/products" method="GET">
+  <label for="category">Categoría:</label>
+  <select name="category" id="category">
+    <option value="">Todas</option>
+    <option value="gorras">Gorras</option>
+    <option value="remeras">Remeras</option>
+    <option value="accesorios">Accesorios</option>
+  </select>
+
+  <label for="sort">Ordenar por precio:</label>
+  <select name="sort" id="sort">
+    <option value="">Ninguno</option>
+    <option value="asc">Ascendente</option>
+    <option value="desc">Descendente</option>
+  </select>
+
+  <button type="submit">Filtrar</button>
+</form>
+
 {{#each products}}
 <div>
     <p>{{this.title}} - {{this.price}}</p>
 </div>
 {{/each}}
+
+{{#if hasPrevPage}}
+<a href="/api/products?page={{prevPage}}&sort={{sort}}&category={{category}}"><button>Anterior</button></a>
+{{/if}}
+
+{{page}}
+
+{{#if hasNextPage}}
+<a href="/api/products?page={{nextPage}}&sort={{sort}}&category={{category}}"><button>Siguiente</button></a>
+{{/if}}
+

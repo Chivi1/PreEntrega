@@ -1,13 +1,36 @@
 import { Router } from "express";
 import ProductManager from "../dao/Mongo/Managers/ProductManager.js";
+import productModel from "../dao/Mongo/Models/ProductModel.js";
 
 const router = Router();
 const productService = new ProductManager();
 
-router.get('/',async(req,res)=>{
+/* router.get('/',async(req,res)=>{
     const products = await productService.getProducts().lean();
     res.render('products',{products});
-})
+}) */
+
+router.get('/', async (req, res) => {
+    const { page = 1, sort, category } = req.query;
+
+    const filter = {};
+    if (category) {
+      filter.category = category;
+    }
+  
+    const options = {
+      page,
+      limit: 4,
+      lean: true,
+      sort: { price: sort === 'asc' ? 1 : -1 } // Ordena por precio ascendente o descendente
+    };
+  
+    const { docs, hasPrevPage, hasNextPage, prevPage, nextPage, ...rest } = await productModel.paginate(filter, options);
+    const products = docs;
+    console.log(products);
+    res.render('products', { products, hasNextPage, hasPrevPage, nextPage, prevPage, page: rest.page });
+  });
+
 
 router.post('/', async(req,res)=>{
     const {title, description, category, price, thumbnail, stock} = req.body;
@@ -22,7 +45,7 @@ router.post('/', async(req,res)=>{
         stock
     }
     const result = await productService.createProduct(product);
-    res.sendStatus();
+    res.status(200).send('Creado');
 })
 
 router.get('/pid',async(req,res)=>{
