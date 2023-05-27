@@ -21,7 +21,13 @@
 
 {{#each products}}
 <div>
-    <p>{{this.title}} - {{this.price}}</p>
+  <p>{{this.title}} - {{this.price}}</p>
+    <form action="/carts/products" method="POST">
+      <input type="hidden" name="productId" value="{{this._id}}">
+      <input type="hidden" name="cartId" value="{{cartId}}">
+      <input type="number" name="quantity" placeholder="Cantidad" required>
+      <button type="submit">Agregar al carrito</button>
+    </form>
 </div>
 {{/each}}
 

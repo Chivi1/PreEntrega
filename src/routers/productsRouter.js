@@ -1,18 +1,16 @@
 import { Router } from "express";
 import ProductManager from "../dao/Mongo/Managers/ProductManager.js";
 import productModel from "../dao/Mongo/Models/ProductModel.js";
+/* import CartManager from "../dao/Mongo/Managers/CartManager.js"; */
 
 const router = Router();
 const productService = new ProductManager();
 
-/* router.get('/',async(req,res)=>{
-    const products = await productService.getProducts().lean();
-    res.render('products',{products});
-}) */
-
 router.get('/', async (req, res) => {
     const { page = 1, sort, category } = req.query;
-
+  
+/*     const createCart = await CartManager.createCart();  */
+  
     const filter = {};
     if (category) {
       filter.category = category;
@@ -22,14 +20,15 @@ router.get('/', async (req, res) => {
       page,
       limit: 4,
       lean: true,
-      sort: { price: sort === 'asc' ? 1 : -1 } // Ordena por precio ascendente o descendente
+      sort: { price: sort === 'asc' ? 1 : -1 } 
     };
   
     const { docs, hasPrevPage, hasNextPage, prevPage, nextPage, ...rest } = await productModel.paginate(filter, options);
     const products = docs;
     console.log(products);
-    res.render('products', { products, hasNextPage, hasPrevPage, nextPage, prevPage, page: rest.page });
+    res.render('products', { products, hasNextPage, hasPrevPage, nextPage, prevPage, page: rest.page/* , createCart */ });
   });
+  
 
 
 router.post('/', async(req,res)=>{

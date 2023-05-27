@@ -20,23 +20,34 @@ router.get('/:cartId', async (req, res) => {
   try {
     const { cartId } = req.params;
     const cart = await cartManager.getCartById(cartId);
-    res.json(cart);
+    res.render('cart', { cart }); 
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
 // Endpoint para agregar un producto a un carrito
-router.post('/:cartId/products', async (req, res) => {
+router.post('/products', async (req, res) => {
   try {
-    const { cartId } = req.params;
-    const { productId, quantity } = req.body;
-    const updatedCart = await cartManager.addProductToCart(cartId, productId, quantity);
-    res.json(updatedCart);
+    const { cartId, productId, quantity } = req.body;
+    
+    let updatedCart;
+    
+    if (!cartId) {
+      // Si no hay un carrito, crear un nuevo carrito
+      const newCart = await cartManager.createCart([{ product: productId, quantity }]);
+      updatedCart = newCart;
+    } else {
+      // Si se proporciona un ID de carrito, agregar productos al carrito existente
+      updatedCart = await cartManager.addProductToCart(cartId, productId, quantity);
+    }
+    
+    res.redirect(`/carts/${updatedCart._id}`);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 // Endpoint para eliminar todos los productos de un carrito
 router.delete('/:cartId/products', async (req, res) => {
