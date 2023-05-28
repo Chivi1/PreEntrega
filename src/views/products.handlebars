@@ -1,5 +1,7 @@
 <h1>Todos los productos</h1>
 
+<p>tu carrito es {{cartId}}</p>
+
 <form action="/api/products" method="GET">
   <label for="category">Categoría:</label>
   <select name="category" id="category">
@@ -24,7 +26,6 @@
   <p>{{this.title}} - {{this.price}}</p>
     <form action="/carts/products" method="POST">
       <input type="hidden" name="productId" value="{{this._id}}">
-      <input type="hidden" name="cartId" value="{{cartId}}">
       <input type="number" name="quantity" placeholder="Cantidad" required>
       <button type="submit">Agregar al carrito</button>
     </form>
@@ -40,4 +41,45 @@
 {{#if hasNextPage}}
 <a href="/api/products?page={{nextPage}}&sort={{sort}}&category={{category}}"><button>Siguiente</button></a>
 {{/if}}
+<br>
+<br>
+<a href="/carts/{{cartId}}"><button>Ver Mi Carrito</button></a>
 
+<script>
+  document.querySelectorAll('form[action="/carts/products"]').forEach(form => {
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const productId = form.querySelector('input[name="productId"]').value;
+      const cartId = "{{cartId}}";
+      const quantity = form.querySelector('input[name="quantity"]').value;
+
+      const data = {
+        productId,
+        cartId,
+        quantity
+      };
+      console.log(data);
+
+      try {
+        const response = await fetch('/api/carts/products', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          // El producto se agregó correctamente al carrito
+          console.log('Producto agregado al carrito');
+        } else {
+          // Hubo un error al agregar el producto al carrito
+          console.error('Error al agregar el producto al carrito');
+        }
+      } catch (error) {
+        console.error('Error de red:', error);
+      }
+    });
+  });
+</script>

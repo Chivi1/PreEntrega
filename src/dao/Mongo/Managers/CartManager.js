@@ -4,11 +4,12 @@ class CartManager {
   async createCart(products) {
     try {
       const cart = await cartModel.create({ products });
-      return cart;
+      return { cartId: cart._id };
     } catch (error) {
       throw new Error('No se pudo crear el carrito.');
     }
   }
+  
 
   async getCartById(cartId) {
     try {

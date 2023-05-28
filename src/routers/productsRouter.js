@@ -1,15 +1,20 @@
 import { Router } from "express";
 import ProductManager from "../dao/Mongo/Managers/ProductManager.js";
 import productModel from "../dao/Mongo/Models/ProductModel.js";
-/* import CartManager from "../dao/Mongo/Managers/CartManager.js"; */
+import CartManager from "../dao/Mongo/Managers/CartManager.js";
 
 const router = Router();
 const productService = new ProductManager();
+const CartService = new CartManager();
 
 router.get('/', async (req, res) => {
     const { page = 1, sort, category } = req.query;
   
-/*     const createCart = await CartManager.createCart();  */
+    let createCartResult = await CartService.createCart();
+    let cartId = createCartResult.cartId;
+    console.log("Carrito creado:", cartId);
+    
+    
   
     const filter = {};
     if (category) {
@@ -26,8 +31,9 @@ router.get('/', async (req, res) => {
     const { docs, hasPrevPage, hasNextPage, prevPage, nextPage, ...rest } = await productModel.paginate(filter, options);
     const products = docs;
     console.log(products);
-    res.render('products', { products, hasNextPage, hasPrevPage, nextPage, prevPage, page: rest.page/* , createCart */ });
+    res.render('products', { products, hasNextPage, hasPrevPage, nextPage, prevPage, page: rest.page, cartId });
   });
+  
   
 
 
