@@ -1,6 +1,6 @@
 <h1>Todos los productos</h1>
 
-<p>tu carrito es {{cartId}}</p>
+<p>Tu carrito es {{cartId}}</p>
 
 <form action="/api/products" method="GET">
   <label for="category">Categoría:</label>
@@ -24,35 +24,36 @@
 {{#each products}}
 <div>
   <p>{{this.title}} - {{this.price}}</p>
-    <form action="/carts/products" method="POST">
+    <form>
       <input type="hidden" name="productId" value="{{this._id}}">
-      <input type="number" name="quantity" placeholder="Cantidad" required>
-      <button type="submit">Agregar al carrito</button>
+      <input type="number" name="quantity" placeholder="Cantidad" min="1" required>
+      <button class="addToCartButton" data-product-id="{{this._id}}">Agregar al carrito</button>
     </form>
 </div>
 {{/each}}
 
 {{#if hasPrevPage}}
-<a href="/api/products?page={{prevPage}}&sort={{sort}}&category={{category}}"><button>Anterior</button></a>
+<a href="/api/products?page={{prevPage}}&sort={{sort}}&category={{category}}&cartId={{cartId}}"><button>Anterior</button></a>
 {{/if}}
 
 {{page}}
 
 {{#if hasNextPage}}
-<a href="/api/products?page={{nextPage}}&sort={{sort}}&category={{category}}"><button>Siguiente</button></a>
+<a href="/api/products?page={{nextPage}}&sort={{sort}}&category={{category}}&cartId={{cartId}}"><button>Siguiente</button></a>
 {{/if}}
 <br>
 <br>
-<a href="/carts/{{cartId}}"><button>Ver Mi Carrito</button></a>
+<a href="/api/carts/{{cartId}}"><button>Ver Mi Carrito</button></a>
 
 <script>
-  document.querySelectorAll('form[action="/carts/products"]').forEach(form => {
-    form.addEventListener('submit', async (event) => {
+  const cartId = "{{cartId}}";
+
+  document.querySelectorAll('.addToCartButton').forEach(button => {
+    button.addEventListener('click', async (event) => {
       event.preventDefault();
 
-      const productId = form.querySelector('input[name="productId"]').value;
-      const cartId = "{{cartId}}";
-      const quantity = form.querySelector('input[name="quantity"]').value;
+      const productId = button.dataset.productId;
+      const quantity = button.parentElement.querySelector('input[name="quantity"]').value;
 
       const data = {
         productId,

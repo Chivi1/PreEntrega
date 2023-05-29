@@ -20,19 +20,40 @@ router.post('/', async (req, res) => {
 router.get('/:cartId', async (req, res) => {
   try {
     const { cartId } = req.params;
-    const cart = await cartManager.getCartById(cartId);
     
-    const products = cart.products.map(item => ({
-      title: item.product.title,
-      quantity: item.quantity,
-      price: item.product.price
-    }));
-
-    res.render('carts', { products });
+    const cart = await cartModel.aggregate([
+      { $match: { _id: mongoose.Types.ObjectId(cartId) } },
+      { $unwind: "$products" },
+      {
+        $group: {
+          _id: "$products.product",
+          totalQuantity: { $sum: "$products.quantity" }
+        }
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "_id",
+          as: "product"
+        }
+      },
+      { $unwind: "$product" },
+      {
+        $project: {
+          _id: "$product._id",
+          name: "$product.name",
+          quantity: "$totalQuantity"
+        }
+      }
+    ]);
+    
+    res.render('carts', { products: cart });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 
 
