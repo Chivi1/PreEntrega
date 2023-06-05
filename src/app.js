@@ -1,5 +1,7 @@
 import express from 'express';
 import handlebars from 'express-handlebars';
+import MongoStore from 'connect-mongo';
+import session from 'express-session';
 
 import viewsRouter from './routers/viewsRouter.js'
 import productsRouter from './routers/productsRouter.js'
@@ -12,6 +14,17 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const server = app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 const connection = mongoose.connect("mongodb+srv://paulofr016:123@cluster01.f2wdtfx.mongodb.net/?retryWrites=true&w=majority");
+
+app.use(session({
+    // store: new fileStorage({path:`${__dirname}/sessions`, ttl: 15, retries:0 }),//time to live
+    store: new MongoStore({
+        mongoUrl:"mongodb+srv://CoderUser:123@clustercitofeliz.m6oxtjj.mongodb.net/modulo2?retryWrites=true&w=majority",
+        ttl: 3600,
+    }),
+    secret:"CoderS3cretFelis",
+    resave:false,
+    saveUninitialized:false
+}))
 
 app.engine('handlebars', handlebars.engine());
 app.set('views', `${__dirname}/views`);
