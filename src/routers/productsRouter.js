@@ -33,8 +33,8 @@ router.get('/', async (req, res) => {
     console.log(products);
     res.render('products', { products, hasNextPage, hasPrevPage, nextPage, prevPage, page: rest.page, cartId });
   });
-  
-  
+
+
 
 
 router.post('/', async(req,res)=>{
