@@ -18,7 +18,7 @@
     <option value="desc">Descendente</option>
   </select>
 
-  <button type="submit">Filtrar</button>
+  <button class= "filter" type="submit">Filtrar</button>
 </form>
 
 {{#each products}}
@@ -46,41 +46,46 @@
 <a href="/api/carts/{{cartId}}"><button>Ver Mi Carrito</button></a>
 
 <script>
-  const cartId = "{{cartId}}";
-
   document.querySelectorAll('.addToCartButton').forEach(button => {
-    button.addEventListener('click', async (event) => {
-      event.preventDefault();
+  button.addEventListener('click', async (event) => {
+    event.preventDefault();
 
-      const productId = button.dataset.productId;
-      const quantity = button.parentElement.querySelector('input[name="quantity"]').value;
+    const productId = button.dataset.productId;
+    const quantity = button.parentElement.querySelector('input[name="quantity"]').value;
 
-      const data = {
-        productId,
-        cartId,
-        quantity
-      };
-      console.log(data);
+    const cartId = "{{cartId}}"; 
 
-      try {
-        const response = await fetch('/api/carts/products', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        });
+    const data = {
+      productId,
+      cartId,
+      quantity
+    };
+    console.log(data);
 
-        if (response.ok) {
-          // El producto se agregó correctamente al carrito
-          console.log('Producto agregado al carrito');
-        } else {
-          // Hubo un error al agregar el producto al carrito
-          console.error('Error al agregar el producto al carrito');
-        }
-      } catch (error) {
-        console.error('Error de red:', error);
+    try {
+      const response = await fetch(`/api/carts/${cartId}/products/${productId}`, { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        console.log('Producto agregado al carrito');
+      } else {
+        console.error('Error al agregar el producto al carrito');
       }
-    });
+    } catch (error) {
+      console.error('Error de red:', error);
+    }
   });
+});
+
+</script>
+<script>
+  document.querySelectorAll('.filter').forEach(button) => {
+    button.addEventListener('click', async (event)) => {
+      event.preventDefault();}
+  }
 </script>
