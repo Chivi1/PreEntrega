@@ -13,8 +13,6 @@ router.get('/', async (req, res) => {
     let createCartResult = await CartService.createCart();
     let cartId = createCartResult.cartId;
     console.log("Carrito creado:", cartId);
-    
-    
   
     const filter = {};
     if (category) {
@@ -31,10 +29,9 @@ router.get('/', async (req, res) => {
     const { docs, hasPrevPage, hasNextPage, prevPage, nextPage, ...rest } = await productModel.paginate(filter, options);
     const products = docs;
     console.log(products);
-    res.render('products', { products, hasNextPage, hasPrevPage, nextPage, prevPage, page: rest.page, cartId });
+  
+    res.json({ products, hasNextPage, hasPrevPage, nextPage, prevPage, page: rest.page, cartId });
   });
-
-
 
 
 router.post('/', async(req,res)=>{

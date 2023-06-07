@@ -22,7 +22,7 @@ router.get('/:cartId', async (req, res) => {
     try {
       const cart = await cartManager.getCartById(cartId);
   
-      res.render('carts', { cart });
+      res.json({ cart });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }}
