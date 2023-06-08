@@ -2,7 +2,7 @@
 
 <p>Tu carrito es {{cartId}}</p>
 
-<form action="/api/products" method="GET">
+<form action="/products" method="GET">
   <label for="category">Categoría:</label>
   <select name="category" id="category">
     <option value="">Todas</option>
@@ -18,28 +18,29 @@
     <option value="desc">Descendente</option>
   </select>
 
-  <button class= "filter" type="submit">Filtrar</button>
+  <button type="submit">Filtrar</button>
 </form>
-
 {{#each products}}
 <div>
   <p>{{this.title}} - {{this.price}}</p>
-    <form>
-      <input type="hidden" name="productId" value="{{this._id}}">
-      <input type="number" name="quantity" placeholder="Cantidad" min="1" required>
-      <button class="addToCartButton" data-product-id="{{this._id}}">Agregar al carrito</button>
-    </form>
+  <form>
+    <input type="hidden" name="productId" value="{{this._id}}">
+    <input type="number" name="quantity" placeholder="Cantidad" min="1" required>
+    <button class="addToCartButton" data-product-id="{{this._id}}">Agregar al carrito</button>
+  </form>
 </div>
 {{/each}}
 
 {{#if hasPrevPage}}
-<a href="/api/products?page={{prevPage}}&sort={{sort}}&category={{category}}&cartId={{cartId}}"><button>Anterior</button></a>
+<a
+  href="/products?page={{prevPage}}&sort={{sort}}&category={{category}}&cartId={{cartId}}"><button>Anterior</button></a>
 {{/if}}
 
-{{page}}
+{{current}}
 
 {{#if hasNextPage}}
-<a href="/api/products?page={{nextPage}}&sort={{sort}}&category={{category}}&cartId={{cartId}}"><button>Siguiente</button></a>
+<a
+  href="/products?page={{nextPage}}&sort={{sort}}&category={{category}}&cartId={{cartId}}"><button>Siguiente</button></a>
 {{/if}}
 <br>
 <br>
@@ -47,45 +48,39 @@
 
 <script>
   document.querySelectorAll('.addToCartButton').forEach(button => {
-  button.addEventListener('click', async (event) => {
-    event.preventDefault();
+    button.addEventListener('click', async (event) => {
+      event.preventDefault();
 
-    const productId = button.dataset.productId;
-    const quantity = button.parentElement.querySelector('input[name="quantity"]').value;
+      const productId = button.dataset.productId;
+      const quantity = button.parentElement.querySelector('input[name="quantity"]').value;
 
-    const cartId = "{{cartId}}"; 
+      const cartId = "{{cartId}}";
 
-    const data = {
-      productId,
-      cartId,
-      quantity
-    };
-    console.log(data);
+      const data = {
+        productId,
+        cartId,
+        quantity
+      };
+      console.log(data);
 
-    try {
-      const response = await fetch(`/api/carts/${cartId}/products/${productId}`, { 
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
+      try {
+        const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
 
-      if (response.ok) {
-        console.log('Producto agregado al carrito');
-      } else {
-        console.error('Error al agregar el producto al carrito');
+        if (response.ok) {
+          console.log('Producto agregado al carrito');
+        } else {
+          console.error('Error al agregar el producto al carrito');
+        }
+      } catch (error) {
+        console.error('Error de red:', error);
       }
-    } catch (error) {
-      console.error('Error de red:', error);
-    }
+    });
   });
-});
 
-</script>
-<script>
-  document.querySelectorAll('.filter').forEach(button) => {
-    button.addEventListener('click', async (event)) => {
-      event.preventDefault();}
-  }
 </script>

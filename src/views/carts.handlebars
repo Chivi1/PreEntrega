@@ -1,12 +1,13 @@
 <h1>Carrito</h1>
 
-{{#if products.length}}
+{{#if products}}
   <ul>
     {{#each products}}
       <li>
-        <p>Producto: {{this.title}}</p>
+        <p>id: {{this._id}}</p>
+        <p>Producto: {{this.product.title}}</p>
         <p>Cantidad: {{this.quantity}}</p>
-        <p>Precio: {{this.price}}</p>
+        <p>Precio: {{this.product.price}}</p>
       </li>
     {{/each}}
   </ul>

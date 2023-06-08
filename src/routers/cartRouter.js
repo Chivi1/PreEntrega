@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import CartManager from '../dao/Mongo/Managers/CartManager.js';
 
+
 const router = Router();
 const cartManager = new CartManager();
 
@@ -18,16 +19,16 @@ router.post('/', async (req, res) => {
 
 // Endpoint para obtener un carrito por ID
 router.get('/:cartId', async (req, res) => {
-    const { cartId } = req.params;
-    try {
-      const cart = await cartManager.getCartById(cartId);
-  
-      res.json({ cart });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }}
-);
-
+  const { cartId } = req.params;
+  try {
+    const cart = await cartManager.getCartById(cartId);
+    const products = cart.products;
+    console.log(products)
+    res.render('carts', { products});
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 
 

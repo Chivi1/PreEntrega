@@ -13,13 +13,14 @@ class CartManager {
 
   async getCartById(cartId) {
     try {
-      const cart = await cartModel.findById(cartId).populate('products.product');
+      const cart = await cartModel.findById(cartId).populate('products.product').lean();
       return cart;
     } catch (error) {
       throw new Error('No se pudo obtener el carrito.');
     }
   }
 
+  
   async addProductToCart(cartId, productId, quantity) {
     try {
       const cart = await cartModel.findByIdAndUpdate(
