@@ -6,6 +6,7 @@ import session from 'express-session';
 import viewsRouter from './routers/viewsRouter.js'
 import productsRouter from './routers/productsRouter.js'
 import cartRouter from './routers/cartRouter.js'
+import sessionsRouter from './routers/sessionRouter.js'
 
 import __dirname from './utils.js';
 import mongoose from 'mongoose';
@@ -16,9 +17,8 @@ const server = app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 const connection = mongoose.connect("mongodb+srv://paulofr016:123@cluster01.f2wdtfx.mongodb.net/?retryWrites=true&w=majority");
 
 app.use(session({
-    // store: new fileStorage({path:`${__dirname}/sessions`, ttl: 15, retries:0 }),//time to live
     store: new MongoStore({
-        mongoUrl:"mongodb+srv://CoderUser:123@clustercitofeliz.m6oxtjj.mongodb.net/modulo2?retryWrites=true&w=majority",
+        mongoUrl:"mongodb+srv://paulofr016:123@cluster01.f2wdtfx.mongodb.net/?retryWrites=true&w=majority",
         ttl: 3600,
     }),
     secret:"CoderS3cretFelis",
@@ -37,3 +37,5 @@ app.use(express.static(`${__dirname}/public`));
 app.use('/',viewsRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartRouter);
+app.use('/api/sessions',sessionsRouter);
+

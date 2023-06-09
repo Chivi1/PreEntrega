@@ -14,8 +14,6 @@ form.addEventListener('submit', async (event) => {
   });
   const responseData = await response.json();
   if (responseData.status === 'success') {
-    //redirijo al login
-    //muestro modal
     window.location.replace('/login');
   }
 });
