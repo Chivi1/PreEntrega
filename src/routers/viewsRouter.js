@@ -21,4 +21,16 @@ router.get('/profile',privacy('PRIVATE'),(req,res)=>{
     })
 })
 
+router.get('/logout', privacy('PRIVATE'), (req, res) => {
+    const cookieName = req.session.cookie.name; 
+    req.session.destroy(function(err) {
+        if (err) {
+            console.log('Error al cerrar sesión:', err);
+        }
+        res.destroy(cookieName); 
+        res.redirect('/login');
+    });
+});
+
+
 export default router

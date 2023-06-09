@@ -1,11 +1,11 @@
-const form = document.getElementById('registerForm');
+const form = document.getElementById('loginForm');
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
   const data = new FormData(form);
   const obj = {};
   data.forEach((value, key) => (obj[key] = value));
-  const response = await fetch('/api/sessions/register', {
+  const response = await fetch('/api/sessions/login', {
     method: 'POST',
     body: JSON.stringify(obj),
     headers: {
@@ -13,7 +13,6 @@ form.addEventListener('submit', async (event) => {
     },
   });
   const responseData = await response.json();
-  if (responseData.status === 'success') {
-    window.location.replace('/login');
-  }
+  console.log(responseData);
+  res.redirect('/profile')
 });
