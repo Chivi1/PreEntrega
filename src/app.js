@@ -22,5 +22,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(`${__dirname}/public`));
 
 app.use('/', viewsRouter);
-app.use('/products', productsRouter);
+app.use('api/products', productsRouter);
 app.use('/api/carts', cartRouter);
+

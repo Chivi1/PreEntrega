@@ -1,13 +1,18 @@
 import { Router } from "express";
 import ProductManager from "../dao/Mongo/Managers/ProductManager.js";
 
-import getProducts from "../service/productsService.js";
+import productModel from "../dao/Mongo/Models/ProductModel.js";
 
 const router = Router();
 const productService = new ProductManager();
 
 router.get('/', async (req, res) => {
-    const sort = req.query.sort;
+    const {page = 1, sort, category }= req.query;
+
+    const filter = {};
+    if (category) {
+        filter.category = category;
+    }
 
     const options = {
         page: parseInt(req.query.page) || 1,
@@ -18,9 +23,10 @@ router.get('/', async (req, res) => {
 
     console.log('Categoría seleccionada:', req.category);
     
-    const { products, hasPrevPage, hasNextPage, prevPage, nextPage, cartId } = await getProducts(req.category, options)
-    console.log('hasNextPage', hasNextPage)
-    res.render('products', { products, hasNextPage, hasPrevPage, nextPage, prevPage, current: options.page, cartId });
+    const { docs, hasPrevPage, hasNextPage, prevPage, nextPage, ...rest } = await productModel.paginate(filter, options);
+
+    const products = docs;
+    res.status(200).send(products)
 });
 
 

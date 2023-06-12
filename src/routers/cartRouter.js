@@ -20,14 +20,9 @@ router.post('/', async (req, res) => {
 // Endpoint para obtener un carrito por ID
 router.get('/:cartId', async (req, res) => {
   const { cartId } = req.params;
-  try {
     const cart = await cartManager.getCartById(cartId);
-    const products = cart.products;
-    console.log(products)
-    res.render('carts', { products});
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+    
+    res.status(200).send(cart);
 });
 
 
