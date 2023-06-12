@@ -32,9 +32,10 @@ router.get('/cart', async (req, res) =>{
       await productModel.paginate(queries, {page, limit, sort: sortedIsRequested, lean:true})
       const products = docs;
 
-      rest. totalDocs == 0||page>rest.totalPages
+      rest. totalDocs == 0|| page > rest.totalPages
       ?res.render('error', console.log(error)):
       res.render('products', {products, queryUrl, page: rest.page, hasPrevPage, hasNextPage, prevPage, nextPage, limit}); 
+      console.log(rest.totalDocs, rest.totalPages, page)
   }catch (error){
     res.render('error') 
   }
