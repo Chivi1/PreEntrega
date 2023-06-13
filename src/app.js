@@ -2,6 +2,8 @@ import express from 'express';
 import handlebars from 'express-handlebars';
 import MongoStore from 'connect-mongo';
 import session from 'express-session';
+import passport from 'passport'
+import mongoose from 'mongoose';
 
 import viewsRouter from './routers/viewsRouter.js'
 import productsRouter from './routers/productsRouter.js'
@@ -9,7 +11,8 @@ import cartRouter from './routers/cartRouter.js'
 import sessionsRouter from './routers/sessionRouter.js'
 
 import __dirname from './utils.js';
-import mongoose from 'mongoose';
+import initializePassportStrategies from './config/passport.config.js';
+
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -33,6 +36,9 @@ app.set('view engine', 'handlebars');
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(express.static(`${__dirname}/public`));
+
+app.use(passport.initialize());
+initializePassportStrategies();
 
 app.use('/',viewsRouter);
 app.use('/api/products', productsRouter);
