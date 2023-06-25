@@ -6,58 +6,33 @@ import productModel from "../dao/Mongo/Models/ProductModel.js";
 const router = Router();
 const productService = new ProductManager();
 
-/* router.get('/', async (req, res) => {
-    const {page = 1, sort, category }= req.query;
-
-    const filter = {};
-    if (category) {
-        filter.category = category;
-    }
-
-    const options = {
-        page: parseInt(req.query.page) || 1,
-        limit: 5,
-        lean: true,
-        sort: { price: sort === 'asc' ? 1 : -1 }
-    };
-
-    console.log('Categoría seleccionada:', req.category);
-    
-    const { docs, hasPrevPage, hasNextPage, prevPage, nextPage, ...rest } = await productModel.paginate(filter, options);
-
-    const products = docs;
-    res.status(200).send(products)
-}); */
-
 router.get ('/products', async (req, res) => {
     try {
-        const { page = 1 } = req.query;
-        const { limit = 10 } = req. query;
-        const { category } = req.query;
-        /* const { sort } = req.query;
+            const { page = 1 } = req.query;
+            const { limit } = req. query;
+            const { category } = req.query;
+            const { sort } = req.query;
 
-        let ordenar = '' 
+            const filter = {};
+            if (category) {
+                filter.category = category;
+            }
+            
+            const options = {
+                page: parseInt(req.query.page) || 1,
+                limit: 5,
+                lean: true,
+                sort: { price: sort === 'asc' ? 1 : -1 }
+            };
 
-        if (sort == 1 || sort == -1 || sort == 'asc' || sort == 'desc') {
-        ordenar = {price: sort}
-    } */
-
-        const { docs, hasPrevPage, hasNextPage, prevage, nextPage, totalPages, ...rest } = await productModel.paginate({},
-        {
-            page, limit, lean: true, category/*, sort: ordenar */
-        });
+            const { docs, hasPrevPage, hasNextPage, prevage, nextPage, totalPages, ...rest } = await productModel.paginate({},
+            {
+                page, limit, lean: true, filter, options
+            });
 
         const products = docs;
 
-        res.render ('products', {
-        products,
-        hasPrevPage,
-        hasNextPage,
-        prevPage,
-        nextPage,
-        page: rest.page,
-        limit: rest.limit,
-        });
+        res.status(200).send(products, hasPrevPage, hasNextPage, prevage, nextPage, totalPages, ...rest, sort, category);
 
     } catch (error) {
         res.status(500).send({ status: "error", message: "error al obtener productos"});
