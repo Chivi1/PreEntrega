@@ -2,7 +2,7 @@
 
 <p>Tu carrito es {{cartId}}</p>
 
-<form action="/api/products" method="GET">
+<form action="/products" method="GET">
   <label for="category">Categoría:</label>
   <select name="category" id="category">
     <option value="">Todas</option>
@@ -20,40 +20,41 @@
 
   <button type="submit">Filtrar</button>
 </form>
-
 {{#each products}}
 <div>
   <p>{{this.title}} - {{this.price}}</p>
-    <form>
-      <input type="hidden" name="productId" value="{{this._id}}">
-      <input type="number" name="quantity" placeholder="Cantidad" min="1" required>
-      <button class="addToCartButton" data-product-id="{{this._id}}">Agregar al carrito</button>
-    </form>
+  <form>
+    <input type="hidden" name="productId" value="{{this._id}}">
+    <input type="number" name="quantity" placeholder="Cantidad" min="1" required>
+    <button class="addToCartButton" data-product-id="{{this._id}}">Agregar al carrito</button>
+  </form>
 </div>
 {{/each}}
 
 {{#if hasPrevPage}}
-<a href="/api/products?page={{prevPage}}&sort={{sort}}&category={{category}}&cartId={{cartId}}"><button>Anterior</button></a>
+<a
+  href="/products/?page={{prevPage}}"><button>Anterior</button></a>
 {{/if}}
 
 {{page}}
 
 {{#if hasNextPage}}
-<a href="/api/products?page={{nextPage}}&sort={{sort}}&category={{category}}&cartId={{cartId}}"><button>Siguiente</button></a>
+<a
+  href="/products/?page={{nextPage}}"><button>Siguiente</button></a>
 {{/if}}
 <br>
 <br>
 <a href="/api/carts/{{cartId}}"><button>Ver Mi Carrito</button></a>
 
 <script>
-  const cartId = "{{cartId}}";
-
   document.querySelectorAll('.addToCartButton').forEach(button => {
     button.addEventListener('click', async (event) => {
       event.preventDefault();
 
       const productId = button.dataset.productId;
       const quantity = button.parentElement.querySelector('input[name="quantity"]').value;
+
+      const cartId = "{{cartId}}";
 
       const data = {
         productId,
@@ -63,7 +64,7 @@
       console.log(data);
 
       try {
-        const response = await fetch('/api/carts/products', {
+        const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -72,10 +73,8 @@
         });
 
         if (response.ok) {
-          // El producto se agregó correctamente al carrito
           console.log('Producto agregado al carrito');
         } else {
-          // Hubo un error al agregar el producto al carrito
           console.error('Error al agregar el producto al carrito');
         }
       } catch (error) {
@@ -83,4 +82,5 @@
       }
     });
   });
+
 </script>
