@@ -9,15 +9,17 @@ import viewsRouter from './routers/viewsRouter.js'
 import productsRouter from './routers/productsRouter.js'
 import cartRouter from './routers/cartRouter.js'
 import sessionsRouter from './routers/sessionRouter.js'
+import config from  './config.js';
 
 import __dirname from './utils.js';
 import initializePassportStrategies from './config/passport.config.js';
 
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT  = config.app.PORT;
+console.log(`Conectando a la base de datos: ${config.mongo.URL}`)
 const server = app.listen(PORT, () => console.log(`Listening on ${PORT}`));
-const connection = mongoose.connect("mongodb+srv://paulofr016:123@cluster01.f2wdtfx.mongodb.net/?retryWrites=true&w=majority");
+
 
 app.use(session({
     store: new MongoStore({
