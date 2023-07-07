@@ -16,9 +16,18 @@ import initializePassportStrategies from './config/passport.config.js';
 
 
 const app = express();
-const PORT  = config.app.PORT;
-console.log(`Conectando a la base de datos: ${config.mongo.URL}`)
-const server = app.listen(PORT, () => console.log(`Listening on ${PORT}`));
+const PORT  = config.app.PORT||8080;
+const DB_URL = process.env.MONGO_URL;
+
+mongoose.connect(DB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log('Conexión exitosa a la base de datos');
+    // Resto de la configuración y rutas de la aplicación Express
+    app.listen(PORT, () => console.log(`Servidor en ejecución en el puerto ${PORT}`));
+  })
+  .catch((error) => {
+    console.error('Error al conectar a la base de datos:', error);
+  });
 
 
 app.use(session({
