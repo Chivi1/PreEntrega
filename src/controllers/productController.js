@@ -1,6 +1,8 @@
 import ProductManager from '../dao/Mongo/Managers/ProductManager.js';
+import ProductService from '../service/productsService.js';
 
-const productService = new ProductManager();
+const productManager = new ProductManager();
+const productService = new ProductService();
 
 async function getProducts(req, res) {
   try {
@@ -12,33 +14,29 @@ async function getProducts(req, res) {
     }
 
     const options = {
-      page,
+      page: parseInt(page),
       limit: 4,
-      lean: true,
       sort: { price: sort === 'asc' ? 1 : -1 }
     };
 
-    const products = await productService.getProducts(filter,options).lean();
-    
+    const result = await productService.getProducts(filter, options);
 
     const responseData = {
-      products: products,
-      hasNextPage: products.hasNextPage,
-      hasPrevPage: products.hasPrevPage,
-      nextPage: products.nextPage,
-      prevPage: products.prevPage,
-      page: products.page,
-      cartId: cartId,
-      filter,
-      options
+      products: result.docs,
+      hasNextPage: result.hasNextPage,
+      hasPrevPage: result.hasPrevPage,
+      nextPage: result.nextPage,
+      prevPage: result.prevPage,
+      page: result.page,
+      cartId: cartId
     };
 
     res.render('products', responseData);
-    /* res.status(500).json(responseData) */
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 }
+
 
 // Crear un nuevo producto
 async function createProduct(req, res) {
@@ -58,7 +56,7 @@ async function createProduct(req, res) {
       stock
     };
 
-    await productService.createProduct(product);
+    await productManager.createProduct(product);
 
     res.status(201).send('Creado');
   } catch (error) {
@@ -70,7 +68,7 @@ async function createProduct(req, res) {
 async function getProductById(req, res) {
   try {
     const { cid } = req.params;
-    const product = await productService.getProductById(cid);
+    const product = await productManager.getProductById(cid);
 
     if (!product) {
       return res.status(404).send({ status: "error", error: "product not found" });
@@ -87,7 +85,7 @@ async function updateProduct(req, res) {
   try {
     const { cid } = req.params;
     const updateProduct = req.body;
-    await productService.updateProduct(cid, updateProduct);
+    await productManager.updateProduct(cid, updateProduct);
     res.sendStatus(201);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -98,7 +96,7 @@ async function updateProduct(req, res) {
 async function deleteProduct(req, res) {
   try {
     const { cid } = req.params;
-    await productService.deleteProduct(cid);
+    await productManager.deleteProduct(cid);
     res.sendStatus(204);
   } catch (error) {
     res.status(500).json({ error: error.message });

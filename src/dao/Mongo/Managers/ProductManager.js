@@ -1,22 +1,25 @@
 import productModel from "../Models/ProductModel.js";
 
-export default class ProductManager {
-getProducts = ()=>{
+class ProductManager {
+  getProducts() {
     return productModel.find();
-    }
+  }
 
-getProductBy = (params)=>{
+  getProductBy(params) {
     return productModel.findOne(params);
-}
+  }
 
-createProduct = (product)=>{
+  createProduct(product) {
     return productModel.create(product);
+  }
+
+  updateProduct(id, product) {
+    return productModel.findByIdAndUpdate(id, product);
+  }
+
+  deleteProduct(id) {
+    return productModel.findByIdAndDelete(id);
+  }
 }
 
-updateProduct = (id,product)=>{
-    return productModel.findByIdAndUpdate(id,{$set:product})
-}
-deleteProduct = (id)=>{
-    return productModel.findByIdAndDelete(id);
-}
-}
+export default ProductManager;

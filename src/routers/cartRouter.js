@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import {privacy} from '../middlewares/auth.js'
 import {
   createCart,
   getCartById,
@@ -13,7 +14,7 @@ import {
 const router = Router();
 
 router.post('/', createCart);
-router.get('/:cartId', getCartById);
+router.get('/:cartId', privacy('PRIVATE'), getCartById);
 router.post('/products', addProductToCart);
 router.delete('/:cartId/products', deleteAllProducts);
 router.put('/:cartId', updateCart);

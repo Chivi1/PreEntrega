@@ -1,30 +1,30 @@
-import ProductManager from '../dao/Mongo/Managers/ProductManager.js';
-/* import productModel from "../dao/Mongo/Models/ProductModel.js" */
-
-const productService = new ProductManager();
+import productModel from '../dao/Mongo/Models/ProductModel.js';
 
 class ProductService {
   async getProducts(filter, options) {
-    const products = await productService.paginate(filter, options);
-    /* const products = await productModel.paginate(filter, options); */
-    return products;
+    const result = await productModel.paginate(filter, options);
+    const products = result.docs.map(doc => doc.toObject({ getters: false }));
+    result.docs = products;
+    return result;
   }
 
+
   async createProduct(product) {
-    return await productService.createProduct(product);
+    return await productModel.create(product);
   }
 
   async getProductById(cid) {
-    return await productService.getProductById(cid);
+    return await productModel.findById(cid);
   }
 
   async updateProduct(cid, updatedData) {
-    return await productService.updateProduct(cid, updatedData);
+    return await productModel.findByIdAndUpdate(cid, updatedData);
   }
 
   async deleteProduct(cid) {
-    await productService.deleteProduct(cid);
+    await productModel.findByIdAndDelete(cid);
   }
 }
 
 export default ProductService;
+
