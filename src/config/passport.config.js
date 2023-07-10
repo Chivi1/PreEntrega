@@ -3,7 +3,9 @@ import local from 'passport-local';
 import GithubStrategy from 'passport-github2';
 import userModel from '../dao/mongo/Models/userModel.js';
 import { createHash, validatePassword } from '../utils.js';
+import dotenv from 'dotenv';
 
+dotenv.config();
 
 const LocalStrategy = local.Strategy;
 
@@ -82,7 +84,7 @@ const initializePassportStrategies = () => {
         new GithubStrategy({
             clientID: 'Iv1.4250e6fa066b5041',
             clientSecret: 'cc9174fece3d79b8a46857a5d1adea700b703895',
-            callbackURL: 'http://localhost:8080/api/sessions/githubcallback',
+            callbackURL: `http://localhost:${process.env.PORT}/api/sessions/githubcallback`
         },
         async (accessToken, refreshToken, profile, done) => {
             try {

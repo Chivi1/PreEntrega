@@ -32,7 +32,7 @@ mongoose.connect(DB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
 
 app.use(session({
     store: new MongoStore({
-        mongoUrl:"mongodb+srv://paulofr016:123@cluster01.f2wdtfx.mongodb.net/?retryWrites=true&w=majority",
+        mongoUrl: DB_URL,
         ttl: 3600,
     }),
     secret:"CoderS3cretFelis",
