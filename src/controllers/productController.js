@@ -18,24 +18,15 @@ async function getProducts(req, res) {
       limit: 4,
       sort: { price: sort === 'asc' ? 1 : -1 }
     };
-
     const result = await productService.getProducts(filter, options);
 
-    const responseData = {
-      products: result.docs,
-      hasNextPage: result.hasNextPage,
-      hasPrevPage: result.hasPrevPage,
-      nextPage: result.nextPage,
-      prevPage: result.prevPage,
-      page: result.page,
-      cartId: cartId
-    };
-
-    res.render('products', responseData);
+    return { productsData: result, cartId };
+    
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    throw error;
   }
 }
+
 
 
 // Crear un nuevo producto

@@ -6,10 +6,11 @@ import {
   updateProduct,
   deleteProduct
 } from '../controllers/productController.js';
+import { renderProducts } from '../controllers/viewController.js';
 
 const router = Router();
 
-router.get('/', getProducts);
+router.get('/', renderProducts);
 router.post('/', createProduct);
 router.get('/:cid', getProductById);
 router.put('/:cid', updateProduct);
