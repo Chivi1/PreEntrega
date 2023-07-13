@@ -14,5 +14,5 @@ form.addEventListener('submit', async (event) => {
   });
   const responseData = await response.json();
   console.log(responseData);
-  res.redirect('/profile')
+  window.location.href = '/profile'; 
 });

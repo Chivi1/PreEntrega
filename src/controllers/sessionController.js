@@ -1,3 +1,4 @@
+import UserDTO from '../dtos/userDto.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -16,8 +17,9 @@ export const createAdminSession = (req, res) => {
     }
   };
 
-export const register = (req, res) => {
-    res.send({ status: "success", message: "Registrado" });
+  export const register = (req, res) => {
+    const userDTO = new UserDTO(req.user);
+    res.send({ status: "success", message: "Registrado", user: userDTO });
   };
   
   export const registerFail = (req, res) => {
@@ -26,23 +28,14 @@ export const register = (req, res) => {
   };
   
   export const githubCallback = (req, res) => {
-    const user = req.user;
-    req.session.user = {
-      id: user.id,
-      name: user.first_name,
-      role: user.role,
-      email: user.email,
-    };
-    res.send({ status: "success", message: "Logueado en GitHub" });
+    const userDTO = new UserDTO(req.user);
+    req.session.user = userDTO;
+    res.send({ status: "success", message: "Logueado en GitHub", user: userDTO });
   };
   
   export const login = (req, res) => {
-    req.session.user = {
-      name: req.user.name,
-      role: req.user.role,
-      id: req.user.id,
-      email: req.user.email,
-    };
+    const userDTO = new UserDTO(req.user);
+    req.session.user = userDTO;
     res.sendStatus(200);
   };
   

@@ -1,8 +1,7 @@
-import ProductManager from '../dao/Mongo/Managers/ProductManager.js';
-import ProductService from '../service/productsService.js';
+import ProductRepository from '../service/repositories/productRepository.js';
+import ProductDTO from '../dtos/productDto.js';
 
-const productManager = new ProductManager();
-const productService = new ProductService();
+const productRepository = new ProductRepository();
 
 async function getProducts(req, res) {
   try {
@@ -18,18 +17,14 @@ async function getProducts(req, res) {
       limit: 4,
       sort: { price: sort === 'asc' ? 1 : -1 }
     };
-    const result = await productService.getProducts(filter, options);
+    const result = await productRepository.getProducts(filter, options);
 
     return { productsData: result, cartId };
-    
   } catch (error) {
-    throw error;
+    res.status(500).json({ error: error.message });
   }
 }
 
-
-
-// Crear un nuevo producto
 async function createProduct(req, res) {
   try {
     const { title, description, category, price, thumbnail, stock } = req.body;
@@ -38,16 +33,10 @@ async function createProduct(req, res) {
       return res.status(400).send({ status: "error", error: "incomplete values" });
     }
 
-    const product = {
-      title,
-      description,
-      category,
-      price,
-      thumbnail,
-      stock
-    };
+    const productDTO = new ProductDTO(title, description, category, price, thumbnail, stock);
+    const product = productDTO.toObject();
 
-    await productManager.createProduct(product);
+    await productRepository.createProduct(product);
 
     res.status(201).send('Creado');
   } catch (error) {
@@ -55,11 +44,10 @@ async function createProduct(req, res) {
   }
 }
 
-// Obtener un producto por ID
 async function getProductById(req, res) {
   try {
     const { cid } = req.params;
-    const product = await productManager.getProductById(cid);
+    const product = await productRepository.getProductById(cid);
 
     if (!product) {
       return res.status(404).send({ status: "error", error: "product not found" });
@@ -71,23 +59,21 @@ async function getProductById(req, res) {
   }
 }
 
-// Actualizar un producto
 async function updateProduct(req, res) {
   try {
     const { cid } = req.params;
     const updateProduct = req.body;
-    await productManager.updateProduct(cid, updateProduct);
+    await productRepository.updateProduct(cid, updateProduct);
     res.sendStatus(201);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 }
 
-// Eliminar un producto
 async function deleteProduct(req, res) {
   try {
     const { cid } = req.params;
-    await productManager.deleteProduct(cid);
+    await productRepository.deleteProduct(cid);
     res.sendStatus(204);
   } catch (error) {
     res.status(500).json({ error: error.message });
