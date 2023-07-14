@@ -4,18 +4,18 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const createAdminSession = (req, res) => {
-    const { ADMIN_USERNAME, ADMIN_PASSWORD } = process.env;
-  
-    if (req.body.username === ADMIN_USERNAME && req.body.password === ADMIN_PASSWORD) {
-      req.session.user = {
-        username: ADMIN_USERNAME,
-        role: 'admin',
-      };
-      res.send({ status: 'success', message: 'ADMIN Iniciado' });
-    } else {
-      res.status(401).send({ status: 'error', error: 'Invalido' });
-    }
-  };
+  const { ADMIN_USERNAME, ADMIN_PASSWORD } = process.env;
+
+  if (req.body.username === ADMIN_USERNAME && req.body.password === ADMIN_PASSWORD) {
+    req.session.user = {
+      name: ADMIN_USERNAME,
+      role: 'admin',
+    };
+    res.status(200).json({ status: 'success', message: 'ADMIN Iniciado' } ,console.log("ADMIN"));
+  } else {
+    res.status(401).json({ status: 'error', message: 'Credenciales inválidas' });
+  }
+};
 
   export const register = (req, res) => {
     const userDTO = new UserDTO(req.user);

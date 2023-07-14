@@ -12,7 +12,14 @@ form.addEventListener('submit', async (event) => {
       'Content-Type': 'application/json',
     },
   });
-  const responseData = await response.json();
-  console.log(responseData);
-  window.location.href = '/profile'; 
+
+  if (response.ok) {
+    const responseData = await response.json();
+    console.log(responseData);
+    window.location.href = '/profile';
+  } else {
+    const errorData = await response.text();
+    console.error('Error:', errorData);
+  }
 });
+

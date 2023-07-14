@@ -40,44 +40,46 @@ const initializePassportStrategies = () => {
     );
 
     passport.use(
-    'login',
-        new LocalStrategy({ usernameField: 'email' },
-            async (email, password, done) => {
-                //Admin login
-                if (email === `${process.env.ADMIN_USERNAME}` && password === `${process.env.ADMIN_PASSWORD}`) {
-                    const user = {
-                        id: 0,
-                        name: `Admin`,
-                        role: 'admin',
-                        email: '...',
-                    };
-                        return done(null, user);
-                }
-
-                //user login
-                let user;
-
-                user = await userModel.findOne({ email }); //busco por mail
-                if (!user)
-                    return done(null, false, { message: 'Credenciales incorrectas' });
-        
-                //VERIFICAR PASSWORD ENCRIPTADO
-                const isValidPassword = await validatePassword (password, user.password);
-                if (!isValidPassword)
-                    return done(null, false, { message: 'Contraseña inválida' });
-        
-                //passport = Solo devuelvo al usuario
-        
-                user = {
-                    id: user._id,
-                    name: `${user.first_name} ${user.last_name}`,
-                    email: user.email,
-                    role: user.role,
-                };
-                return done(null, user);
-                }
-        )
-    );
+        'login',
+        new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
+          // Admin login
+          if (email === process.env.ADMIN_USERNAME && password === process.env.ADMIN_PASSWORD) {
+            const adminUser = {
+              id: 0,
+              name: 'Admin',
+              role: 'admin',
+              email: '...',
+            };
+            return done(null, adminUser);
+          }
+      
+          // User login
+          try {
+            const user = await userModel.findOne({ email });
+      
+            if (!user) {
+              return done(null, false, { message: 'Credenciales incorrectas' });
+            }
+      
+            const isValidPassword = await validatePassword(password, user.password);
+      
+            if (!isValidPassword) {
+              return done(null, false, { message: 'Contraseña inválida' });
+            }
+      
+            const formattedUser = {
+              id: user._id,
+              name: `${user.first_name} ${user.last_name}`,
+              email: user.email,
+              role: user.role,
+            };
+      
+            return done(null, formattedUser);
+          } catch (error) {
+            return done(error);
+          }
+        })
+      );
     
     passport.use(
         'github',
@@ -111,16 +113,23 @@ const initializePassportStrategies = () => {
     passport.serializeUser(function (user, done) {
         return done(null, user.id);
     });
-        passport.deserializeUser(async function (id, done) {
-            if(id===0){
-                return done(null,{
-                    role:"admin",
-                    name:"ADMIN"
-                })
-            }
-        const user = await userModel.findOne({ _id: id });
-        return done(null, user);
-    });
+    
+    passport.deserializeUser(async function (id, done) {
+        if (id === 0) {
+          const adminUser = {
+            role: 'admin',
+            name: 'ADMIN'
+          };
+          return done(null, adminUser);
+        }
+      
+        try {
+          const user = await userModel.findOne({ _id: id });
+          return done(null, user);
+        } catch (error) {
+          return done(error);
+        }
+      });
     
     };
     export default initializePassportStrategies;

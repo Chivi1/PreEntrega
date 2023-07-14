@@ -12,6 +12,6 @@ router.get('/login', privacy('NO_AUTHENTICATED'), viewsController.login);
 
 router.get('/profile', privacy('PRIVATE'), viewsController.profile);
 
-router.get('/logout', privacy('PRIVATE'), viewsController.logout);
+router.post('/logout', privacy('PRIVATE'), viewsController.logout);
 
 export default router;

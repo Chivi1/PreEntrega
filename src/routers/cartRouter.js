@@ -8,19 +8,22 @@ import {
   updateCart,
   deleteCart,
   removeProductFromCart,
-  updateProductQuantity
+  updateProductQuantity,
+  purchaseCart
 } from '../controllers/cartController.js';
 
 const router = Router();
 
 router.post('/', createCart);
 router.get('/:cartId', privacy('PRIVATE'), getCartById);
-router.post('/products', addProductToCart);
+router.post('/products', privacy("USER"), addProductToCart);
 router.delete('/:cartId/products', deleteAllProducts);
 router.put('/:cartId', updateCart);
 router.delete('/:cartId', deleteCart);
 router.delete('/:cartId/products/:productId', removeProductFromCart);
 router.put('/:cartId', updateCart);
 router.put('/:cartId/products/:productId', updateProductQuantity);
+
+router.post('/:cid/purchase', purchaseCart);
 
 export default router;

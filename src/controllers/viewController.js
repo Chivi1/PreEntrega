@@ -24,7 +24,7 @@ viewsController.profile = (req, res) => {
 
 viewsController.logout = (req, res) => {
   const cookieName = req.session.cookie.name;
-  req.session.destroy(function (err) {
+  req.session.destroy(function(err) {
     if (err) {
       console.log('Error al cerrar sesión:', err);
     }

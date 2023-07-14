@@ -1,5 +1,7 @@
 import CartRepository from '../service/repositories/cartRepository.js';
 import CartDTO from '../dtos/cartDto.js';
+import UserDTO from '../dtos/userDto.js';
+import Ticket from '../dao/Mongo/Models/TicketModel.js'
 
 const cartRepository = new CartRepository();
 
@@ -94,6 +96,67 @@ async function updateProductQuantity(req, res) {
   }
 }
 
+
+function generateUniqueCode() {
+  const timestamp = Date.now().toString(); 
+  const randomId = Math.random().toString(36).slice(2, 7); 
+
+  const uniqueCode = `${timestamp}-${randomId}`;
+
+  return uniqueCode;
+}
+
+
+async function purchaseCart(req, res) {
+  try {
+    const { cartId } = req.params;
+    const cart = await cartRepository.getCartById(cartId);
+
+    // Comprobar el stock de cada producto en el carrito
+    const productsToUpdate = [];
+    const failedProducts = [];
+
+    for (const item of cart.products) {
+      const product = item.product;
+      const quantityInCart = item.quantity;
+
+      if (product.stock >= quantityInCart) {
+        product.stock -= quantityInCart;
+        productsToUpdate.push(product);
+      } else {
+        // Si no hay suficiente stock, agregar el producto a la lista de productos fallidos
+        failedProducts.push(product._id);
+      }
+    }
+
+    // Actualizar el stock de los productos en la base de datos
+    await Promise.all(productsToUpdate.map(product => product.save()));
+
+    const currentUser = new UserDTO(req.session.user); 
+
+    // Crear el nuevo ticket con el usuario como comprador
+    const ticket = new Ticket({
+      code: generateUniqueCode(), 
+      amount: cart.totalAmount,
+      purchaser: currentUser.id, 
+    });
+
+    await ticket.save();
+
+    // Filtrar los productos que no pudieron comprarse y actualizar el carrito
+    const failedProductIds = failedProducts.map(product => product._id);
+    const remainingProducts = cart.products.filter(item => failedProductIds.includes(item.product.toString()));
+    cart.products = remainingProducts;
+    await cart.save();
+
+    return res.status(200).json({ message: 'Compra finalizada con éxito', ticket, failedProducts });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Error al finalizar la compra' });
+  }
+}
+
+
 export {
   createCart,
   getCartById,
@@ -102,7 +165,8 @@ export {
   updateCart,
   deleteCart,
   removeProductFromCart,
-  updateProductQuantity
+  updateProductQuantity,
+  purchaseCart, 
 };
 
 
