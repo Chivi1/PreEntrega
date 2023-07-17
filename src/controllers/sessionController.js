@@ -11,7 +11,8 @@ export const createAdminSession = (req, res) => {
       name: ADMIN_USERNAME,
       role: 'admin',
     };
-    res.status(200).json({ status: 'success', message: 'ADMIN Iniciado' } ,console.log("ADMIN"));
+    console.log("ADMIN");
+    res.status(200).json({ status: 'success', message: 'ADMIN Iniciado' });
   } else {
     res.status(401).json({ status: 'error', message: 'Credenciales inválidas' });
   }
@@ -30,7 +31,8 @@ export const createAdminSession = (req, res) => {
   export const githubCallback = (req, res) => {
     const userDTO = new UserDTO(req.user);
     req.session.user = userDTO;
-    res.send({ status: "success", message: "Logueado en GitHub", user: userDTO });
+    res.status(200).json({ status: "success", message: "Logueado en GitHub", user: userDTO });
+    res.redirect('/profile');
   };
   
   export const login = (req, res) => {
