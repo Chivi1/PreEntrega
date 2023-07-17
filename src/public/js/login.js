@@ -5,6 +5,7 @@ form.addEventListener('submit', async (event) => {
   const data = new FormData(form);
   const obj = {};
   data.forEach((value, key) => (obj[key] = value));
+  console.log(obj)
   const response = await fetch('/api/sessions/login', {
     method: 'POST',
     body: JSON.stringify(obj),
@@ -12,8 +13,7 @@ form.addEventListener('submit', async (event) => {
       'Content-Type': 'application/json',
     },
   });
-  const responseData = await response.json();
-  console.log(responseData);
+  if(response.status !== 200) throw new Error("Wrong credentials")
   window.location.href = '/profile'; 
 });
 

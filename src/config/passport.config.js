@@ -43,6 +43,7 @@ const initializePassportStrategies = () => {
         'login',
         new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
           // Admin login
+          console.log("Doing admin login",email)
           if (email === process.env.ADMIN_USERNAME && password === process.env.ADMIN_PASSWORD) {
             const adminUser = {
               id: 0,
