@@ -1,5 +1,6 @@
 import { getProducts } from "./productController.js"; 
 import UserDTO from '../dtos/userDto.js';
+import CartRepository from "../service/repositories/cartRepository.js";
 
 const viewsController = {};
 
@@ -52,5 +53,18 @@ viewsController.renderProducts = async (req, res, next) => {
     next(error);
   }
 };
+
+viewsController.renderCarts = async (req, res) => {
+  try {
+    const { cartId } = req.params;
+    const cartRepository = new CartRepository(); 
+    const cart = await cartRepository.getCartById(cartId); 
+    res.render('carts', { products: cart.products });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+
 
 export default viewsController;

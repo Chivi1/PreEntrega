@@ -22,7 +22,7 @@ async function getCartById(req, res) {
   try {
     const { cartId } = req.params;
     const cart = await cartRepository.getCartById(cartId);
-    res.render('carts', { products: cart });
+    return {products: cart.products} ;
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

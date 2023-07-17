@@ -11,11 +11,12 @@ import {
   updateProductQuantity,
   purchaseCart
 } from '../controllers/cartController.js';
+import viewsController from '../controllers/viewController.js';
 
 const router = Router();
 
 router.post('/', createCart);
-router.get('/:cartId', privacy('PRIVATE'), getCartById);
+router.get('/:cartId', privacy('PRIVATE'), viewsController.renderCarts);
 router.post('/products', privacy("USER"), addProductToCart);
 router.delete('/:cartId/products', deleteAllProducts);
 router.put('/:cartId', updateCart);
