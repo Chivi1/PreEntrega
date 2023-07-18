@@ -5,7 +5,7 @@ const productRepository = new ProductRepository();
 
 async function getProducts(req, res) {
   try {
-    const cartId = '64a6d42e855a8673d1c4418e';
+    const cartId = '6481ee729b5ab81d4e3d4a45'; 
     const { page = 1, sort, category } = req.query;
     const filter = {};
     if (category) {

@@ -1,4 +1,8 @@
 import CartRepository from '../service/repositories/cartRepository.js';
+import cartModel from '../dao/Mongo/Models/CartModel.js';
+import productModel from '../dao/Mongo/Models/ProductModel.js';
+
+
 import CartDTO from '../dtos/cartDto.js';
 import UserDTO from '../dtos/userDto.js';
 import Ticket from '../dao/Mongo/Models/TicketModel.js'
@@ -110,40 +114,57 @@ function generateUniqueCode() {
 async function purchaseCart(req, res) {
   try {
     const { cartId } = req.params;
-    const cart = await cartRepository.getCartById(cartId);
 
-    // Comprobar el stock de cada producto en el carrito
+    if (!cartId) {
+      return res.status(400).json({ error: 'ID de carrito inválido' });
+    }
+
+    const cart = await cartModel.findById(cartId);
+
+    if (!cart) {
+      return res.status(404).json({ error: 'Carrito no encontrado' });
+    }
+
     const productsToUpdate = [];
     const failedProducts = [];
 
     for (const item of cart.products) {
-      const product = item.product;
+      const productId = item.product;
       const quantityInCart = item.quantity;
+
+      const product = await productModel.findById(productId);
+
+      if (!product) {
+        throw new Error(`Producto no encontrado: ${productId}`);
+      }
 
       if (product.stock >= quantityInCart) {
         product.stock -= quantityInCart;
+        await product.save();
         productsToUpdate.push(product);
       } else {
-        // Si no hay suficiente stock, agregar el producto a la lista de productos fallidos
         failedProducts.push(product._id);
       }
     }
 
-    // Actualizar el stock de los productos en la base de datos
-    await Promise.all(productsToUpdate.map(product => product.save()));
+    await cartModel.findByIdAndUpdate(cartId, { products: cart.products });
 
-    const currentUser = new UserDTO(req.session.user); 
+    const exampleUser = {id:"64afe89d3ec913899377d55f", name: "Prueba", role: "user", email: "prueba@correo.com"}
 
-    // Crear el nuevo ticket con el usuario como comprador
+    const currentUser = req.session.user ? new UserDTO(req.session.user) : exampleUser;
+
+    if (!currentUser) {
+      return res.status(400).json({ error: 'Usuario no válido' });
+    }
+
     const ticket = new Ticket({
-      code: generateUniqueCode(), 
+      code: generateUniqueCode(),
       amount: cart.totalAmount,
-      purchaser: currentUser.id, 
+      purchaser: currentUser.email, 
     });
 
     await ticket.save();
 
-    // Filtrar los productos que no pudieron comprarse y actualizar el carrito
     const failedProductIds = failedProducts.map(product => product._id);
     const remainingProducts = cart.products.filter(item => failedProductIds.includes(item.product.toString()));
     cart.products = remainingProducts;
@@ -155,6 +176,7 @@ async function purchaseCart(req, res) {
     return res.status(500).json({ error: 'Error al finalizar la compra' });
   }
 }
+
 
 
 export {
