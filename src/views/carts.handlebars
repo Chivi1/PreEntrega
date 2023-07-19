@@ -10,6 +10,9 @@
       </li>
     {{/each}}
   </ul>
+  <form action="{{cartId}}/purchase" method="POST">
+    <button type="submit">Completar compra</button>
+  </form>
 {{else}}
   <p>No se encontraron productos en el carrito.</p>
 {{/if}}

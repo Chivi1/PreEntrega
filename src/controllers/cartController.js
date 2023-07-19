@@ -149,10 +149,11 @@ async function purchaseCart(req, res) {
 
     await cartModel.findByIdAndUpdate(cartId, { products: cart.products });
 
-    const exampleUser = {id:"64afe89d3ec913899377d55f", name: "Prueba", role: "user", email: "prueba@correo.com"}
+    const exampleUser = new UserDTO({ id: "64afe89d3ec913899377d55f", firstName: "Prueba", lastName:"preuba", role: "user", email: "prueba@correo.com" });
 
     const currentUser = req.session.user ? new UserDTO(req.session.user) : exampleUser;
-
+    console.log(currentUser);
+    
     if (!currentUser) {
       return res.status(400).json({ error: 'Usuario no válido' });
     }
@@ -160,7 +161,7 @@ async function purchaseCart(req, res) {
     const ticket = new Ticket({
       code: generateUniqueCode(),
       amount: cart.totalAmount,
-      purchaser: currentUser.email, 
+      purchaser: currentUser, 
     });
 
     await ticket.save();
@@ -170,12 +171,15 @@ async function purchaseCart(req, res) {
     cart.products = remainingProducts;
     await cart.save();
 
-    return res.status(200).json({ message: 'Compra finalizada con éxito', ticket, failedProducts });
+    res.status(200).json({ message: 'Compra finalizada con éxito', ticket, failedProducts });
+    return res.redirect(`/${cartId}/purchase`);
+    
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Error al finalizar la compra' });
   }
 }
+
 
 
 

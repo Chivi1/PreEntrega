@@ -26,5 +26,6 @@ router.put('/:cartId', updateCart);
 router.put('/:cartId/products/:productId', updateProductQuantity);
 
 router.post('/:cartId/purchase', purchaseCart);
+router.get('/cartId/purchase', viewsController.renderTicket)
 
 export default router;

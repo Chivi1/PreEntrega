@@ -1,0 +1,16 @@
+<h1>Ticket de compra</h1>
+
+<p>Código del ticket: {{ticket.code}}</p>
+<p>Monto total: {{ticket.amount}}</p>
+<p>Comprador: {{ticket.purchaser}}</p>
+
+<h2>Productos fallidos</h2>
+{{#if ticket.failedProducts.length}}
+  <ul>
+    {{#each ticket.failedProducts}}
+      <li>{{this}}</li>
+    {{/each}}
+  </ul>
+{{else}}
+  <p>No se encontraron productos fallidos.</p>
+{{/if}}

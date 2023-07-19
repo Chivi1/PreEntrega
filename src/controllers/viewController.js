@@ -1,6 +1,7 @@
 import { getProducts } from "./productController.js"; 
 import UserDTO from '../dtos/userDto.js';
 import CartRepository from "../service/repositories/cartRepository.js";
+import TicketModel from "../dao/Mongo/Models/TicketModel.js"
 
 const viewsController = {};
 
@@ -59,12 +60,24 @@ viewsController.renderCarts = async (req, res) => {
     const { cartId } = req.params;
     const cartRepository = new CartRepository(); 
     const cart = await cartRepository.getCartById(cartId); 
-    res.render('carts', { products: cart.products });
+    res.render('carts', { products: cart.products, cartId });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 }
 
+viewsController.renderTicket = async (req, res) => {
+  try {
+    const { cartId } = req.params;
+
+    const ticket = await TicketModel.findOne({ cartId });
+
+    res.render('ticket', { ticket });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Error al obtener el ticket' });
+  }
+};
 
 
 export default viewsController;
