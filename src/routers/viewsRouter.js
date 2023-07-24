@@ -14,4 +14,6 @@ router.get('/profile', privacy('PRIVATE'), viewsController.profile);
 
 router.post('/logout', privacy('PRIVATE'), viewsController.logout);
 
+router.get('/products', viewsController.renderProducts);
+
 export default router;

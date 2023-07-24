@@ -5,14 +5,15 @@ import {
   createProduct,
   getProductById,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  getProducts
 } from '../controllers/productController.js';
 
-import viewController from '../controllers/viewController.js';
+
 
 const router = Router();
 
-router.get('/', viewController.renderProducts);
+router.get('/', getProducts);
 router.post('/', privacy("ADMIN"), createProduct);
 router.get('/:cid', getProductById);
 router.put('/:cid', privacy("ADMIN"), updateProduct);

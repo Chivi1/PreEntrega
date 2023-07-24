@@ -18,6 +18,7 @@ async function getProducts(req, res) {
       sort: { price: sort === 'asc' ? 1 : -1 }
     };
     const result = await productRepository.getProducts(filter, options);
+/*     res.send(result) */
 
     return { productsData: result, cartId };
   } catch (error) {
