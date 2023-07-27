@@ -13,6 +13,11 @@ class ProductRepository {
     return result;
   }
 
+  async getAllProducts(){
+    const products = await this.productManager.getProducts();
+    return products
+  }
+
   async createProduct(product) {
     await this.productManager.createProduct(product);
   }

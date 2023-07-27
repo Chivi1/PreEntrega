@@ -14,19 +14,24 @@ async function createCart(req, res) {
   try {
     const { products } = req.body;
     const cartDTO = new CartDTO(products);
-    const newCart = await cartRepository.createCart(cartDTO.toObject());
-    res.status(201).json(newCart);
+
+    const cartId = await cartRepository.createCart(cartDTO.toObject());
+
+
+    res.status(201).json({ cartId });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 }
+
 
 // Obtener un carrito por ID
 async function getCartById(req, res) {
   try {
     const { cartId } = req.params;
     const cart = await cartRepository.getCartById(cartId);
-    return {products: cart.products} ;
+    /* return {products: cart.products} ; */
+    res.status(200).send(cart)
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -171,8 +176,8 @@ async function purchaseCart(req, res) {
     cart.products = remainingProducts;
     await cart.save();
 
-    res.status(200).json({ message: 'Compra finalizada con éxito', ticket, failedProducts });
-    return res.redirect(`/${cartId}/purchase`);
+    res.status(200).send({ message: 'Compra finalizada con éxito', ticket, failedProducts });
+/*     return res.redirect(`/${cartId}/purchase`); */
     
   } catch (error) {
     console.error(error);

@@ -6,14 +6,15 @@ import {
   getProductById,
   updateProduct,
   deleteProduct,
-  getProducts
+  getProducts,
+  getAllProducts
 } from '../controllers/productController.js';
 
 
 
 const router = Router();
 
-router.get('/', getProducts);
+router.get('/', getAllProducts);
 router.post('/', privacy("ADMIN"), createProduct);
 router.get('/:cid', getProductById);
 router.put('/:cid', privacy("ADMIN"), updateProduct);

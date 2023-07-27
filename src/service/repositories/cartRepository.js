@@ -7,8 +7,8 @@ class CartRepository {
 
   async createCart(products) {
     try {
-      const cart = await this.cartManager.createCart(products);
-      return { cartId: cart._id };
+      const cartId = await this.cartManager.createCart(products);
+      return cartId;
     } catch (error) {
       throw new Error('No se pudo crear el carrito.');
     }

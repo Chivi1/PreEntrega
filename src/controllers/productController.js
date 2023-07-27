@@ -5,7 +5,7 @@ const productRepository = new ProductRepository();
 
 async function getProducts(req, res) {
   try {
-    const cartId = '6481ee729b5ab81d4e3d4a45'; 
+    /* const cartId = '6481ee729b5ab81d4e3d4a45';  */
     const { page = 1, sort, category } = req.query;
     const filter = {};
     if (category) {
@@ -18,11 +18,20 @@ async function getProducts(req, res) {
       sort: { price: sort === 'asc' ? 1 : -1 }
     };
     const result = await productRepository.getProducts(filter, options);
-/*     res.send(result) */
+    res.send(result)
 
-    return { productsData: result, cartId };
+    /* return { productsData: result, cartId }; */
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+}
+
+async function getAllProducts(req, res) {
+  try {
+    const products = await productRepository.getAllProducts();
+    res.send(products);
+  } catch (error) {
+    res.status(500).json("productos no encontrados");
   }
 }
 
@@ -86,5 +95,6 @@ export {
   createProduct,
   getProductById,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  getAllProducts
 };

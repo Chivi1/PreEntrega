@@ -1,7 +1,11 @@
 class CartDTO {
-    constructor(products) {
-      this.products = products;
-    }
+  constructor(products) {
+    this.products = products;
   }
-  
-  export default CartDTO;
+
+  toObject() {
+    return { products: this.products };
+  }
+}
+
+export default CartDTO;
