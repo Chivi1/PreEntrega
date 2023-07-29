@@ -2,8 +2,6 @@ import CartRepository from '../service/repositories/cartRepository.js';
 import cartModel from '../dao/Mongo/Models/CartModel.js';
 import productModel from '../dao/Mongo/Models/ProductModel.js';
 
-
-import CartDTO from '../dtos/cartDto.js';
 import UserDTO from '../dtos/userDto.js';
 import Ticket from '../dao/Mongo/Models/TicketModel.js'
 
@@ -13,11 +11,7 @@ const cartRepository = new CartRepository();
 async function createCart(req, res) {
   try {
     const { products } = req.body;
-    const cartDTO = new CartDTO(products);
-
-    const cartId = await cartRepository.createCart(cartDTO.toObject());
-
-
+    const cartId = await cartRepository.createCart({ products });
     res.status(201).json({ cartId });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -37,16 +31,29 @@ async function getCartById(req, res) {
   }
 }
 
-// Agregar un producto a un carrito
+// Agregar un producto a un carrito 
 async function addProductToCart(req, res) {
   try {
     const { cartId, productId, quantity } = req.body;
+
+    // Verificar si el producto existe antes de agregarlo al carrito
+    const productExists = await cartRepository.checkProductExists(productId);
+    if (!productExists) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+
     const updatedCart = await cartRepository.addProductToCart(cartId, productId, quantity);
+    
+    if (!updatedCart) {
+      return res.status(500).json({ error: 'No se pudo agregar el producto al carrito.' });
+    }
+
     res.json(updatedCart);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 }
+
 
 // Eliminar todos los productos de un carrito
 async function deleteAllProducts(req, res) {
@@ -116,6 +123,7 @@ function generateUniqueCode() {
 }
 
 
+
 async function purchaseCart(req, res) {
   try {
     const { cartId } = req.params;
@@ -134,9 +142,18 @@ async function purchaseCart(req, res) {
     const failedProducts = [];
 
     for (const item of cart.products) {
-      const productId = item.product;
-      const quantityInCart = item.quantity;
+      let productId, quantityInCart;
 
+      
+      if (item.product && item.product._id) {
+        productId = item.product._id;
+        quantityInCart = item.quantity;
+      } else {
+        productId = item._id;
+        quantityInCart = 1; 
+      }
+      
+      console.log(productId, quantityInCart)
       const product = await productModel.findById(productId);
 
       if (!product) {
@@ -148,42 +165,64 @@ async function purchaseCart(req, res) {
         await product.save();
         productsToUpdate.push(product);
       } else {
-        failedProducts.push(product._id);
+        failedProducts.push(product);
       }
     }
 
-    await cartModel.findByIdAndUpdate(cartId, { products: cart.products });
-
-    const exampleUser = new UserDTO({ id: "64afe89d3ec913899377d55f", firstName: "Prueba", lastName:"preuba", role: "user", email: "prueba@correo.com" });
-
+    const exampleUser = new UserDTO({ id: "64afe89d3ec913899377d55f", firstName: "Prueba", lastName: "preuba", role: "user", email: "prueba@correo.com" });
     const currentUser = req.session.user ? new UserDTO(req.session.user) : exampleUser;
-    console.log(currentUser);
-    
-    if (!currentUser) {
-      return res.status(400).json({ error: 'Usuario no válido' });
-    }
+
+    const totalAmount = cart.products.reduce((acc, item) => {
+      const product = item.product || item; 
+      const productPrice = product.price || 0;
+      const quantity = item.quantity || 1; 
+      return acc + productPrice * quantity;
+    }, 0);
 
     const ticket = new Ticket({
       code: generateUniqueCode(),
-      amount: cart.totalAmount,
-      purchaser: currentUser, 
+      amount: totalAmount,
+      purchaser: currentUser.id,
     });
 
     await ticket.save();
 
-    const failedProductIds = failedProducts.map(product => product._id);
-    const remainingProducts = cart.products.filter(item => failedProductIds.includes(item.product.toString()));
-    cart.products = remainingProducts;
-    await cart.save();
+    const failedProductIds = failedProducts.map(product => product._id.toString());
+    const remainingProducts = cart.products.filter(item => {
+      const product = item.product || item; // Fallback for older cart structure
+      return failedProductIds.includes(product._id.toString());
+    });
 
-    res.status(200).send({ message: 'Compra finalizada con éxito', ticket, failedProducts });
-/*     return res.redirect(`/${cartId}/purchase`); */
-    
+    await cartModel.findByIdAndUpdate(cartId, { products: remainingProducts });
+
+    // Verificar si el carrito está vacío y eliminarlo
+    if (remainingProducts.length === 0) {
+      await cartModel.findByIdAndDelete(cartId);
+    }
+
+    res.status(200).json({
+      message: 'Compra finalizada con éxito',
+      ticket,
+      purchaser: ticket.purchaser,
+      failedProducts: failedProducts.map(product => {
+        return {
+          productId: product._id,
+          productName: product.title,
+          requestedQuantity: cart.products.find(item => {
+            const productInCart = item.product || item; // Fallback for older cart structure
+            return productInCart._id.toString() === product._id.toString();
+          }).quantity || 1, // Fallback for older cart structure
+        };
+      }),
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Error al finalizar la compra' });
   }
 }
+
+
+
 
 
 

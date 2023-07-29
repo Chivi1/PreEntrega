@@ -1,4 +1,5 @@
 import CartManager from '../../dao/Mongo/Managers/CartManager.js';
+import productModel from '../../dao/Mongo/Models/ProductModel.js';
 
 class CartRepository {
   constructor() {
@@ -29,6 +30,15 @@ class CartRepository {
       return cart;
     } catch (error) {
       throw new Error('No se pudo agregar el producto al carrito.');
+    }
+  }
+
+  async checkProductExists(productId) {
+    try {
+      const product = await productModel.findById(productId);
+      return !!product; // Devuelve true si el producto existe, false si no
+    } catch (error) {
+      return false;
     }
   }
 

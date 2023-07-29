@@ -32,7 +32,6 @@ class CartManager {
       throw new Error('No se pudo agregar el producto al carrito.');
     }
   }
-
   async updateCart(cartId, updatedData) {
     try {
       const cart = await cartModel.findByIdAndUpdate(

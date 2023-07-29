@@ -22,7 +22,6 @@ const DB_URL = process.env.MONGO_URL;
 mongoose.connect(DB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log('Conexión exitosa a la base de datos');
-    // Resto de la configuración y rutas de la aplicación Express
     app.listen(PORT, () => console.log(`Servidor en ejecución en el puerto ${PORT}`));
   })
   .catch((error) => {
