@@ -36,7 +36,7 @@ class CartRepository {
   async checkProductExists(productId) {
     try {
       const product = await productModel.findById(productId);
-      return !!product; // Devuelve true si el producto existe, false si no
+      return !!product; 
     } catch (error) {
       return false;
     }

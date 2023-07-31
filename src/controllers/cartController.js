@@ -36,7 +36,6 @@ async function addProductToCart(req, res) {
   try {
     const { cartId, productId, quantity } = req.body;
 
-    // Verificar si el producto existe antes de agregarlo al carrito
     const productExists = await cartRepository.checkProductExists(productId);
     if (!productExists) {
       return res.status(404).json({ error: 'Producto no encontrado' });
