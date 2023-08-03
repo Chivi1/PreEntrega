@@ -143,7 +143,6 @@ async function purchaseCart(req, res) {
 
     for (const item of cart.products) {
       let productId, quantityInCart;
-
       
       if (item.product && item.product._id) {
         productId = item.product._id;
@@ -195,26 +194,39 @@ async function purchaseCart(req, res) {
 
     await cartModel.findByIdAndUpdate(cartId, { products: remainingProducts });
 
-    // Verificar si el carrito está vacío y eliminarlo
     if (remainingProducts.length === 0) {
       await cartModel.findByIdAndDelete(cartId);
     }
 
     res.status(200).json({
       message: 'Compra finalizada con éxito',
-      ticket,
-      purchaser: ticket.purchaser,
+      ticket: {
+        code: ticket.code,
+        amount: ticket.amount,
+        purchaser: currentUser, // Include purchaser details
+        products: productsToUpdate.map(product => {
+          return {
+            productId: product._id,
+            productName: product.title, // Assuming 'title' is a property of your product model
+            purchasedQuantity: cart.products.find(item => {
+              const productInCart = item.product || item;
+              return productInCart._id.toString() === product._id.toString();
+            }).quantity || 1,
+          };
+        }),
+      },
       failedProducts: failedProducts.map(product => {
         return {
           productId: product._id,
           productName: product.title,
           requestedQuantity: cart.products.find(item => {
-            const productInCart = item.product || item; 
+            const productInCart = item.product || item;
             return productInCart._id.toString() === product._id.toString();
-          }).quantity || 1, 
+          }).quantity || 1,
         };
       }),
     });
+
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Error al finalizar la compra' });
