@@ -10,9 +10,10 @@ const cartRepository = new CartRepository();
 // Crear un nuevo carrito
 async function createCart(req, res) {
   try {
-    const { products } = req.body;
-    const cartId = await cartRepository.createCart({ products });
-    res.status(201).json({ cartId });
+    /* const { products } = req.body; */
+    const cart = {};
+    const newCart = await cartRepository.createCart(cart);
+    res.status(201).json(newCart);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -208,9 +209,9 @@ async function purchaseCart(req, res) {
           productId: product._id,
           productName: product.title,
           requestedQuantity: cart.products.find(item => {
-            const productInCart = item.product || item; // Fallback for older cart structure
+            const productInCart = item.product || item; 
             return productInCart._id.toString() === product._id.toString();
-          }).quantity || 1, // Fallback for older cart structure
+          }).quantity || 1, 
         };
       }),
     });
@@ -219,9 +220,6 @@ async function purchaseCart(req, res) {
     return res.status(500).json({ error: 'Error al finalizar la compra' });
   }
 }
-
-
-
 
 
 

@@ -1,10 +1,10 @@
 import cartModel from "../Models/CartModel.js";
 
 class CartManager {
-  async createCart(products) {
+  async createCart(cart) {
     try {
-      const cart = await cartModel.create({ products });
-      return { cartId: cart._id };
+      return await cartModel.create(cart);
+      
     } catch (error) {
       throw new Error('No se pudo crear el carrito.');
     }

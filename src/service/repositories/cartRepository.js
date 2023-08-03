@@ -6,10 +6,10 @@ class CartRepository {
     this.cartManager = new CartManager();
   }
 
-  async createCart(products) {
+  async createCart(cart) {
     try {
-      const cartId = await this.cartManager.createCart(products);
-      return cartId;
+      const newCart = await this.cartManager.createCart(cart);
+      return newCart;
     } catch (error) {
       throw new Error('No se pudo crear el carrito.');
     }
@@ -31,7 +31,7 @@ class CartRepository {
     } catch (error) {
       throw new Error('No se pudo agregar el producto al carrito.');
     }
-  }
+  } 
 
   async checkProductExists(productId) {
     try {
