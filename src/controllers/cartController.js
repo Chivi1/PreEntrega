@@ -188,7 +188,7 @@ async function purchaseCart(req, res) {
 
     const failedProductIds = failedProducts.map(product => product._id.toString());
     const remainingProducts = cart.products.filter(item => {
-      const product = item.product || item; // Fallback for older cart structure
+      const product = item.product || item; 
       return failedProductIds.includes(product._id.toString());
     });
 
@@ -203,11 +203,11 @@ async function purchaseCart(req, res) {
       ticket: {
         code: ticket.code,
         amount: ticket.amount,
-        purchaser: currentUser, // Include purchaser details
+        purchaser: currentUser, 
         products: productsToUpdate.map(product => {
           return {
             productId: product._id,
-            productName: product.title, // Assuming 'title' is a property of your product model
+            productName: product.title, 
             purchasedQuantity: cart.products.find(item => {
               const productInCart = item.product || item;
               return productInCart._id.toString() === product._id.toString();

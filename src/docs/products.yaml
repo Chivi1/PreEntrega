@@ -1,0 +1,129 @@
+paths:
+  /productos:
+    get:
+      summary: Obtener lista de productos
+      tags:
+        - Productos
+      responses:
+        '200':
+          description: Lista de productos
+          content:
+            application/json:
+              example: |
+                [
+                  {
+                    "title": "Producto 1",
+                    "description": "Descripción del producto 1",
+                    "category": "Categoría 1",
+                    "price": 100,
+                    "thumbnail": "imagen.jpg",
+                    "stock": 10
+                  },
+                  {
+                    "title": "Producto 2",
+                    "description": "Descripción del producto 2",
+                    "category": "Categoría 2",
+                    "price": 150,
+                    "thumbnail": "imagen2.jpg",
+                    "stock": 5
+                  }
+                ]
+
+  /productos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID del producto
+        schema:
+          type: string
+    get:
+      summary: Obtener un producto por ID
+      tags:
+        - Productos
+      responses:
+        '200':
+          description: Detalles del producto
+          content:
+            application/json:
+              example: |
+                {
+                  "title": "Producto 1",
+                  "description": "Descripción del producto 1",
+                  "category": "Categoría 1",
+                  "price": 100,
+                  "thumbnail": "imagen.jpg",
+                  "stock": 10
+                }
+      deprecated: false
+
+    put:
+      summary: Actualizar un producto por ID
+      tags:
+        - Productos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductRequest'
+      responses:
+        '204':
+          description: Producto actualizado exitosamente
+      deprecated: false
+
+    delete:
+      summary: Eliminar un producto por ID
+      tags:
+        - Productos
+      responses:
+        '204':
+          description: Producto eliminado exitosamente
+      deprecated: false
+
+    post:
+      summary: Crear un nuevo producto
+      tags:
+        - Productos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewProduct'
+      responses:
+        '201':
+          description: Producto creado exitosamente
+
+components:
+  schemas:
+    NewProduct:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        price:
+          type: number
+        thumbnail:
+          type: string
+        stock:
+          type: number
+
+    UpdateProductRequest:
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        price:
+          type: number
+        thumbnail:
+          type: string
+        stock:
+          type: number
